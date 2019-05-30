@@ -8,17 +8,26 @@ public class Player : MonoBehaviour
     public GameObject board;
     public Button hitButton;
     public Button stayButton;
+    public GameObject card;
 
     private BlackJackGameController gameController;
     private BlackJackGameController.Turn turn;
     private int result;
 
+    private static float yPosition = (float)-2.65;
+    private static float xStartPosition = -1;
+
+
+
     List<Card> hand;
+    List<GameObject> cards;
 
     private void Awake()
     {
         result = 0;
         hand = new List<Card>();
+        cards = new List<GameObject>();
+
         gameController = board.GetComponent<BlackJackGameController>();
         turn = BlackJackGameController.Turn.Wait;
     }
@@ -26,6 +35,7 @@ public class Player : MonoBehaviour
     public void ReceiveCard(Card card)
     {
         hand.Add(card);
+        UpdateCards();
     }
 
     public void TakeTurn()
@@ -33,18 +43,19 @@ public class Player : MonoBehaviour
         result = 0;
         if (turn != BlackJackGameController.Turn.Player)
         {
-            ShowScore();
+            //ShowScore();
             turn = BlackJackGameController.Turn.Player;
             hitButton.enabled = true;
             stayButton.enabled = true;
         }
     }
 
-    public void Hit() 
+    public void Hit()
     {
         hand.Add(gameController.Deal());
 
-        ShowScore();
+        //ShowScore();
+        UpdateCards();
     }
 
     public void Stay()
@@ -53,13 +64,11 @@ public class Player : MonoBehaviour
         hitButton.enabled = false;
         stayButton.enabled = false;
         gameController.NextTurn("Dealer");
-        ShowScore();
+        //ShowScore();
     }
-
 
     public void ShowScore()
     {
-
         int score = 0;
         Debug.Log("Current Cards:");
         foreach (Card card in hand)
@@ -70,9 +79,12 @@ public class Player : MonoBehaviour
         Debug.Log("Score: " + score);
     }
 
-
-    private void Update()
+    private void UpdateCards()
     {
-        
+        for (int i = cards.Count; i < hand.Count; i++)
+        {
+            cards.Add(Instantiate(card, new Vector3(xStartPosition + i, yPosition, 0), Quaternion.identity));
+            cards[i].GetComponent<CardController>().SetCard(hand[i]);
+        }
     }
 }

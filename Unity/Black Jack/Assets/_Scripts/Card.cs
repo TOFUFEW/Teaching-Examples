@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Card : ScriptableObject
+public class Card
 {
     public enum Suit
     {
@@ -14,7 +14,7 @@ public class Card : ScriptableObject
 
     public enum Value
     {
-        One = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
+        Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King
     };
 
     private Value value;
