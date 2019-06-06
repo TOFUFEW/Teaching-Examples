@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Dealer : MonoBehaviour
 {
     public GameObject board;
     public GameObject card;
+    public Text scoreText;
     
     private static float xStartPosition = -1;
     private static float yPosition = (float)2.65;
@@ -13,6 +15,7 @@ public class Dealer : MonoBehaviour
     private BlackJackGameController gameController;
     private List<Card> hand;
     private List<GameObject> cards;
+    public int score;
 
     private void Awake()
     {
@@ -35,7 +38,7 @@ public class Dealer : MonoBehaviour
             hand.Add(gameController.Deal());
             UpdateCards();
         }
-
+        GameOver();
     }
     
     public int GetScore()
@@ -54,6 +57,27 @@ public class Dealer : MonoBehaviour
         {
             cards.Add(Instantiate(card, new Vector3(xStartPosition + i, yPosition, 0), Quaternion.identity));
             cards[i].GetComponent<CardController>().SetCard(hand[i]);
+        }
+    }
+
+    public void GameOver()
+    {
+        UpdateCards();
+        UpdateScore();
+        gameController.GameOver();
+    }
+
+    private void UpdateScore()
+    {
+        score = 0;
+        foreach (Card card in hand)
+        {
+            score += (int)card.getValue();
+        }
+        scoreText.text = "Points: " + score;
+        if (score > 21)
+        {
+            gameController.PlayerBust();
         }
     }
 

@@ -9,22 +9,21 @@ public class Player : MonoBehaviour
     public Button hitButton;
     public Button stayButton;
     public GameObject card;
+    public Text scoreText;
 
     private BlackJackGameController gameController;
     private BlackJackGameController.Turn turn;
-    private int result;
+    public int score;
 
     private static float yPosition = (float)-2.65;
     private static float xStartPosition = -1;
-
-
 
     List<Card> hand;
     List<GameObject> cards;
 
     private void Awake()
     {
-        result = 0;
+        score = 0;
         hand = new List<Card>();
         cards = new List<GameObject>();
 
@@ -36,14 +35,13 @@ public class Player : MonoBehaviour
     {
         hand.Add(card);
         UpdateCards();
+        UpdateScore();
     }
 
     public void TakeTurn()
     {
-        result = 0;
         if (turn != BlackJackGameController.Turn.Player)
         {
-            //ShowScore();
             turn = BlackJackGameController.Turn.Player;
             hitButton.enabled = true;
             stayButton.enabled = true;
@@ -54,8 +52,8 @@ public class Player : MonoBehaviour
     {
         hand.Add(gameController.Deal());
 
-        //ShowScore();
         UpdateCards();
+        UpdateScore();
     }
 
     public void Stay()
@@ -64,7 +62,35 @@ public class Player : MonoBehaviour
         hitButton.enabled = false;
         stayButton.enabled = false;
         gameController.NextTurn("Dealer");
-        //ShowScore();
+    }
+
+    private void UpdateScore()
+    {
+        score = 0;
+        bool hasAce = false;
+        foreach (Card card in hand)
+        {
+            if (card.getValue() == Card.Value.Ace)
+            {
+                hasAce = true;
+                if (score + 11 < 21)
+                {
+                    score += 11;
+                } else
+                {
+                    score += (int)card.getValue();
+                }
+            }
+            else
+            {
+                score += (int)card.getValue();
+            }
+        }
+        scoreText.text = "Points: " + score;
+        if (score > 21)
+        {
+            gameController.PlayerBust();
+        }
     }
 
     public void ShowScore()

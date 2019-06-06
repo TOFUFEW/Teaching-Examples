@@ -1,11 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class BlackJackGameController : MonoBehaviour
 {
     public GameObject player;
     public GameObject dealer;
+    public Text resultText;
 
     private Dealer dealerScript;
     private Player playerScript;
@@ -21,7 +23,8 @@ public class BlackJackGameController : MonoBehaviour
         Start,
         Player,
         Dealer,
-        Wait
+        Wait,
+        GameOver
     }
 
     void Start()
@@ -66,14 +69,14 @@ public class BlackJackGameController : MonoBehaviour
         else if (turn == Turn.Dealer)
         {
             dealerScript.TakeTurn();
-            Debug.Log(dealerScript.GetScore());
-            Debug.Break();
+        }
+        else if (turn == Turn.Wait)
+        {
         }
         else
         {
             GameOver();
         }
-        
     }
 
     public void NextTurn(string turn)
@@ -83,10 +86,22 @@ public class BlackJackGameController : MonoBehaviour
 
     public void PlayerBust()
     {
-
+        turn = Turn.GameOver;
+        dealerScript.GameOver();
     }
 
     public void GameOver()
     {
+        turn = Turn.Wait;
+        
+        if (playerScript.score > 21 || (dealerScript.score < 21 && playerScript.score < dealerScript.score) )
+        {
+            resultText.text = "You Lose!";
+        }
+        else
+        {
+            resultText.text = "You Win!";
+        }
+        
     }
 }
